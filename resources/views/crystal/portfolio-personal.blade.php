@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My Portfolio | Tajuddin Khandaker</title>
+    <title>Tajuddin Khandaker | Portfolio</title>
     <!-- Google Font -->
     <link href='http://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700,800' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
@@ -84,7 +84,7 @@
 	                    <div class="col-md-12 text-center">
 	                        <div class="home_text wow fadeInUp animated">
 	                            <h2>it’s tajuddin khandaker</h2>
-	                            <p>a software engineer and founder of crystal technology</p>
+	                            <p>a software engineer and founder of cryoto</p>
 	                            <img src="/images/shape.png" alt="">                        
 	                        </div>
 	                    </div>
@@ -127,7 +127,7 @@
                     <div class="single_service wow fadeInUp" data-wow-delay="3s">
                         <i class="icon-tools-2"></i>
                         <h2>API</h2>
-                        <p>I provide APIs for developers to build their own systems like me.</p>
+                        <p>I provide APIs for developers to build their own systems like the system built by CRYOTO TECHNOLOGY.</p>
                     </div>
                 </div>
                 <div class="col-md-3 text-center">
@@ -452,7 +452,7 @@
             <div class="row">
                 <div class="col-md-12 text-center">
                     <div class="copyright_text   wow fadeInUp animated">
-                        <p>&copy; Crystal Portfolio 2016. All Right Reserved By <a href="http://crystaltech.spinelbd.com" target="_blank">Crystal Tech Team</a></p>
+                        <p>&copy; Crystal Portfolio 2016. All Right Reserved By <a href="http://crystaltech.spinelbd.com" target="_blank">Cryoto Tech Team</a></p>
                         <p>Built for personal portfolio for creative people.</p>
                     </div>
                 </div>
