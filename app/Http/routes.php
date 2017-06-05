@@ -18,3 +18,7 @@
 Route::get('/', function () {
     return view('crystal.portfolio-personal');
 });
+
+Route::auth();
+
+Route::get('/home', 'HomeController@index');
