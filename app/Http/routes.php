@@ -16,9 +16,15 @@
 // });
 
 Route::get('/', function () {
-    return view('crystal.portfolio-personal');
+    return view('portfolios.portfolio-company');
+});
+
+Route::group(['prefix' => 'api/v1', 'middleware' => 'guest:api', 'as' => 'public::'], function () {
+
+	Route::resource('contacts', 'ContactController');
 });
 
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
+

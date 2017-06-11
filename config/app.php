@@ -158,6 +158,10 @@ return [
 
         /* Laravel Billing */
         Laravel\Cashier\CashierServiceProvider::class,
+        /*
+         * Session based flash notification of message service
+         */
+        Laracasts\Flash\FlashServiceProvider::class,
 
     ],
 

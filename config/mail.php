@@ -57,6 +57,8 @@ return [
 
     'from' => ['address' => null, 'name' => null],
 
+    'admin' => ['address' => env('MAIL_ADMIN', 'admin.noreply@asdtechltd.com'), 'name' => env('MAIL_FROM_NAME', 'Admin')],
+
     /*
     |--------------------------------------------------------------------------
     | E-Mail Encryption Protocol

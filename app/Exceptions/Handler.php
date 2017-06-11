@@ -2,12 +2,18 @@
 
 namespace App\Exceptions;
 
+use Log;
 use Exception;
+use PDOException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+
+use Illuminate\Database\QueryException;
+use Illuminate\Session\TokenMismatchException;
+use Swift_TransportException;
 
 class Handler extends ExceptionHandler
 {
@@ -43,8 +49,47 @@ class Handler extends ExceptionHandler
      * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Exception $exception)
     {
-        return parent::render($request, $e);
+        $vendor = 'PorfolioMaker';
+        if ($exception instanceof PDOException) {
+            $errorMessage['DEFAULT'] = 'Something went wrong while connecting database. Please contact your server administrator.';
+            $errorMessage['42S22'] = 'Your information contains data that has no property in database. Please contact ' . $vendor . ' for help.';
+            $errorMessage['HY000'] = 'Database access denied';
+            $errorMessage['23502'] = 'You have skipped providing some data that database schema designed to expect.';
+            // $errorCode = !array_has($errorMessage, $exception->getCode()) ? 'DEFAULT' : $exception->getCode();
+
+            // Log::critical('[' . $vendor . '][' . $exception->getMessage() . '] ' . $errorMessage[$errorCode] . '.'  );
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . '] ');
+            // flash()->error($errorMessage[$errorCode]);
+            flash()->error(config('app.name') . ' says: "Database credentials are denied. Please contact your database administrator"');
+            return redirect('/login');
+        }
+        if ($exception instanceof QueryException) {
+            $errorMessage = 'Something went wrong while running database query. Please contact your database server administrator.';
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] db query problem or remote database access denied.");
+            flash()->error($errorMessage);
+            return redirect('/login');
+        }
+        if ($exception instanceof TokenMismatchException) {
+            $errorMessage = 'Something went wrong during your request! Please try again';
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] validation error.");
+            flash()->error($errorMessage);
+            return redirect()->back();
+        }
+        if($exception instanceof ErrorException)
+        {
+            $errorMessage = 'Error Occurred.';
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] " . $errorMessage . ".");
+            flash()->error('Something went wrong. Please contact your administrator for assistance.');
+            return redirect()->back();
+        }
+        if($exception instanceof Swift_TransportException)
+        {
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . "]");
+            flash()->error('Something went wrong during sending the mail.');
+            return redirect()->back();
+        }
+        return parent::render($request, $exception);
     }
 }
