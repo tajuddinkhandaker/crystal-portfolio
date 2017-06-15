@@ -2,8 +2,6 @@
 
 namespace App\Support;
 
-use MarketPlex\User;
-use MarketPlex\Security;
 use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -116,11 +114,11 @@ class ActionMailer
         $this->from = $data['email'];
         $this->view = 'emails.appointment-request';
         $this->data = [ 'body' =>  $data['body'], 'name' => $data['name'] ];
-        $this->subject = 'Customer - ' . $data['subject'];
+        $this->subject = '[Client Query][IP:' . $data['ip'] . '][' . $data['subject'] . ']';
         $this->name = $data['name'];
         $this->to = config('mail.admin.address');
         $this->deliver();
-        Log::info('[PortfolioMaker][Email sent for appointment]');
+        Log::info('[PortfolioMaker][ip:' . $data['ip'] . '][Email sent for appointment]');
     }
 
     /**

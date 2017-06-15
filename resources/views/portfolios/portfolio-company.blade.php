@@ -1,6 +1,118 @@
 @extends('layouts.app-portfolio-viewer')
 @section('title', 'Portfolio')
 
+@section('header-scripts')
+
+<!-- <script src="https://www.google.com/recaptcha/api.js" async defer></script> -->
+
+@endsection
+
+@section('footer-scripts')
+
+
+<!-- Explicitly render the reCAPTCHA widget -->
+
+<script type="text/javascript">
+    var contactFormWidgetId;
+    var capchaResponse = '';
+    var verifyCallback = function(response) {
+        capchaResponse = response;
+    };
+    var onloadCapchaCallback = function() {
+        contactFormWidgetId = grecaptcha.render('html_element_capcha', {
+            'sitekey' : '{{ App\Support\SecurityKeeper::getReCapchaSiteKey() }}',
+            'callback' : verifyCallback,
+        });
+    };
+</script>
+
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCapchaCallback&render=explicit"
+    async defer>
+</script>
+
+<script>
+$('#mailer-form').ready(function() {
+
+    $('#mailer-form').submit( function(event) {
+        
+        event.preventDefault();
+        alert( "Thank you for sharing your ideas!" );
+        // console.log($( this ).serialize());
+        // console.log(capchaResponse);
+        // console.log($('#message').val());
+        $.ajax({
+              type: 'post',
+              url: '{{ route("public::api.v1.contacts.store") }}',
+              data: {
+                    name: $(this).find("input[name='name']").val(),
+                    email: $(this).find("input[name='email']").val(),
+                    subject: $(this).find("input[name='subject']").val(),
+                    body: $('#message').val(),
+                    g_recaptcha_response: capchaResponse,
+                    _token: $(this).find("input[name='_token']").val(),
+              },
+              dataType: 'json',
+              statusCode: {
+                    422: function(data) {
+                        var errors = '';
+                        var response = data.responseJSON;
+                        if(response.name != null)
+                            errors += '\n-' + response.name;
+
+                        if(response.email != null)
+                            errors += '\n-' + response.email;
+
+                        if(dresponse.subject != null)
+                            errors += '\n-' + response.subject;
+
+                        if(response.body != null)
+                            errors += '\n-' + response.body;
+                        alert( "Please check your inputs in query submission form!" + errors);
+                    },
+                    400: function(data) {
+                        var response = data.responseJSON;
+                        if(!response.success)
+                            alert( response.message );
+                    }
+              },
+              success: function(data) {
+                    // success logic
+                    if(data.success)
+                    {                        
+                        alert( data.message );
+                        document.getElementById("mailer-form").reset();
+                    }
+              },
+              error: function(jqXHR) {
+                // var errors = data.responseJSON;
+                // console.log(data);
+                if(jqXHR.status != 422 || jqXHR.status != 400)
+                    return;
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Verify Network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Requested page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal Server Error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Requested JSON parse failed.';
+                } else if (exception === 'timeout') {
+                    msg = 'Time out error.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request aborted.';
+                } else {
+                    msg = 'Uncaught Error.\n' + jqXHR.responseText;
+                }                
+                // Render the errors with js ...
+              }
+        });
+    });
+});
+</script>
+
+@endsection
+
 @section('container')
     <section class="services" id="SERVICE">
         <div class="container">
@@ -108,8 +220,7 @@
                 </div>
             </div>
         </div>
-    </section>    
-
+    </section>
     <section class="testimonial text-center wow fadeInUp animated" id="TESTIMONIAL">
         <div class="container">
             <div class="icon">
@@ -127,8 +238,6 @@
             </div>            
         </div>
     </section>
-
-
     <div class="fun_facts">
         <section class="header parallax home-parallax page" id="fun_facts" style="background-position: 50% -150px;">
             <div class="section_overlay">
@@ -304,19 +413,46 @@
                     </div>
                 </div>
                 <div class="col-md-9  wow fadeInRight animated">
-                    <form class="contact-form" action="{{ route('public::api.v1.contacts.store') }}" method="POST">
+                    <form id="mailer-form" class="contact-form"> <!--  action="{{ route('public::api.v1.contacts.store') }}" method="POST" -->
                         {!! csrf_field() !!}
                         <div class="row">
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Name">
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Email">
-                                <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject">                                
+                            <div class="col-md-6 form-group{{ $errors->has('name') || $errors->has('email') || $errors->has('subject') ? ' has-error' : '' }}">
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="{{ !$errors->has('name') ? old('name') : '' }}">
+                                @if ($errors->has('name'))
+                                    <span class="help-block">
+                                      <strong>{{ $errors->first('name') }}</strong>
+                                  </span>
+                                @endif
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Email" value="{{ !$errors->has('email') ? old('email') : '' }}">
+                                @if ($errors->has('email'))
+                                    <span class="help-block">
+                                      <strong>{{ $errors->first('email') }}</strong>
+                                  </span>
+                                @endif
+                                <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" value="{{ !$errors->has('name') ? old('subject') : '' }}">
+                                @if ($errors->has('subject'))
+                                    <span class="help-block">
+                                      <strong>{{ $errors->first('subject') }}</strong>
+                                  </span>
+                                @endif                                
                             </div>
-                            <div class="col-md-6">
-                                <textarea class="form-control" id="message" name="body" rows="25" cols="10" placeholder="  Message Texts..."></textarea>
-                                <button type="submit" class="btn btn-default submit-btn form_submit">SEND MESSAGE</button>                                
+                            <div class="col-md-6 form-group{{ $errors->has('body') ? ' has-error' : '' }}">
+                                <textarea class="form-control" id="message" name="body" rows="25" cols="10" placeholder="  Message Texts...">{{ !$errors->has('body') ? old('body') : '' }}</textarea>
+                                @if ($errors->has('body'))
+                                    <span class="help-block">
+                                      <strong>{{ $errors->first('body') }}</strong>
+                                  </span>
+                                @endif   
+                                <button type="submit" id="mailer-submit" class="btn btn-default submit-btn form_submit">SEND MESSAGE</button>                                
                             </div>
                         </div>
+                        <div id="html_element_capcha" class="form-control"></div>
+                        <div class="g-recaptcha form-group{{ $errors->has('g-recaptcha-response') ? ' has-error' : '' }}" data-sitekey="{{ App\Support\SecurityKeeper::getReCapchaSiteKey() }}"></div>
+                        @if ($errors->has('g-recaptcha-response'))
+                            <span class="help-block">
+                              <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+                          </span>
+                        @endif  
                     </form>
                 </div>
             </div>

@@ -19,6 +19,10 @@ Route::get('/', function () {
     return view('portfolios.portfolio-company');
 });
 
+Route::get('/demo/1', function () {
+    return view('demo.recapcha');
+});
+
 Route::group(['prefix' => 'api/v1', 'middleware' => 'guest:api', 'as' => 'public::'], function () {
 
 	Route::resource('contacts', 'ContactController');

@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'from' => ['address' => null, 'name' => null],
+    'from' => ['address' => env('MAIL_ADMIN'), 'name' => env('MAIL_ADMIN_NAME', 'Super Admin')],
 
     'admin' => ['address' => env('MAIL_ADMIN', 'admin.noreply@asdtechltd.com'), 'name' => env('MAIL_FROM_NAME', 'Admin')],
 

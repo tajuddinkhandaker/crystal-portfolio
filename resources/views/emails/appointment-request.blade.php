@@ -6,12 +6,12 @@
 </head>
 <body>
     <p>
-    	{!! $body !!}
+    	{!! $body or 'No query is written' !!}
     </p>
  	<br/> <br/>
     <p>
     Regards, <br/>
-	{{ $name }}
+	{{ $name or 'Annonymous' }}
     </p>
 </body>
 </html> 
