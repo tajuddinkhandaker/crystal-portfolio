@@ -9,11 +9,13 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Debug\Exception\FatalErrorException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 use Illuminate\Database\QueryException;
 use Illuminate\Session\TokenMismatchException;
 use Swift_TransportException;
+use RuntimeException;
 
 class Handler extends ExceptionHandler
 {
@@ -77,19 +79,45 @@ class Handler extends ExceptionHandler
             flash()->error($errorMessage);
             return redirect()->back();
         }
-        if($exception instanceof ErrorException)
+        if ($exception instanceof ErrorException)
         {
             $errorMessage = 'Error Occurred.';
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . "] " . $errorMessage . ".");
             flash()->error('Something went wrong. Please contact your administrator for assistance.');
             return redirect()->back();
         }
-        if($exception instanceof Swift_TransportException)
+        if ($exception instanceof Swift_TransportException)
         {
             Log::critical('[' . $vendor . '][' . $exception->getMessage() . "]");
             flash()->error('Something went wrong during sending the mail.');
             return redirect()->back();
         }
+        if ($exception instanceof ValidationException)
+        {
+            //
+        }
+        if ($exception instanceof RuntimeException || $exception instanceof FatalErrorException)
+        {
+            //
+            Log::critical('[' . $vendor . '][' . $exception->getMessage() . "]");
+            abort(503);
+        }
         return parent::render($request, $exception);
+    }
+
+    /**
+     * Convert an authentication exception into an unauthenticated response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Auth\AuthenticationException  $exception
+     * @return \Illuminate\Http\Response
+     */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($request->expectsJson()) {
+            return response()->json(['error' => 'Unauthenticated.'], 401);
+        }
+
+        return redirect()->guest('login');
     }
 }

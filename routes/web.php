@@ -2,14 +2,19 @@
 
 /*
 |--------------------------------------------------------------------------
-| Application Routes
+| Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the controller to call when that URI is requested.
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
 |
 */
+
+/* Test */
+Route::get('/phpinfo', function() {
+    return phpinfo();
+});
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -23,12 +28,8 @@ Route::get('/demo/1', function () {
     return view('demo.recapcha');
 });
 
-Route::group(['prefix' => 'api/v1', 'middleware' => 'guest:api', 'as' => 'public::'], function () {
-
-	Route::resource('contacts', 'ContactController');
-});
-
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
+
 

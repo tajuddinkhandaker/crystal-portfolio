@@ -42,7 +42,7 @@ $('#mailer-form').ready(function() {
         // console.log($('#message').val());
         $.ajax({
               type: 'post',
-              url: '{{ route("public::api.v1.contacts.store") }}',
+              url: '{{ route("public::contacts.store") }}',
               data: {
                     name: $(this).find("input[name='name']").val(),
                     email: $(this).find("input[name='email']").val(),
@@ -413,7 +413,7 @@ $('#mailer-form').ready(function() {
                     </div>
                 </div>
                 <div class="col-md-9  wow fadeInRight animated">
-                    <form id="mailer-form" class="contact-form"> <!--  action="{{ route('public::api.v1.contacts.store') }}" method="POST" -->
+                    <form id="mailer-form" class="contact-form"> <!--  action="{{ route('public::contacts.store') }}" method="POST" -->
                         {!! csrf_field() !!}
                         <div class="row">
                             <div class="col-md-6 form-group{{ $errors->has('name') || $errors->has('email') || $errors->has('subject') ? ' has-error' : '' }}">
